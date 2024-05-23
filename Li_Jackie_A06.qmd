@@ -186,6 +186,8 @@ Consider the matrix `mat_rand` of random numbers below.
 rand_num <- c(sample(10:100, 10), sample(100:999, 10), sample(1000:2000, 10))
 
 mat_rand <- matrix(sample(rand_num, 30), ncol = 5)
+mat_rand
+
 ```
 
 Use an appropriate apply function to round values with 2 digits to the nearest tens, values with 3 digits to the nearest hundreds, and 4 digits to the nearest thousands.
@@ -195,6 +197,14 @@ ie: 91 rounds to 90; 173 rounds to 200; 1450 rounds to 1000
 Hint: use `MARGIN = 1:2` to apply the function to each value instead of only a row/col.
 
 ```{r}
+
+rounding <- function(value){
+  digits <- nchar(as.character(value))-1
+  return(round(value, -digits))
+}
+
+mat_rand_round <- apply(mat_rand, 1:2, rounding)
+mat_rand_round
 
 ```
 
@@ -219,6 +229,12 @@ max_temps <- read_tsv("state_max_temps.tsv") |>
 Calculate the average temperature for each month across the whole data frame (using the data for all three states together).
 
 ```{r}
+raw_temp <- max_temps[-c(1,2)]
+raw_temp
+
+average_temp <- apply(raw_temp,2,mean)
+average_temp
+
 
 ```
 
@@ -234,6 +250,11 @@ Create three new data frames by slicing the data by state.
 No need to print any output here.
 
 ```{r}
+co_temp <- as.data.frame(max_temps[max_temps[,1] == "CO",])
+
+oh_temp <- as.data.frame(max_temps[max_temps[,1] == "OH",])
+
+va_temp <- as.data.frame(max_temps[max_temps[,1] == "VA",])
 
 ```
 
@@ -255,6 +276,17 @@ Example (this is NOT the answer just an example of what goes in the {}):
 Note: This code should still run successfully even if the numbers were to change.
 
 ```{r}
+# removing state and year columns from the data frame
+raw_co_temp <- co_temp[-c(1,2)]
+
+# finding the annual median for each year
+annual_median <- apply(raw_co_temp, 1, median)
+names(annual_median) <- co_temp[,2]
+
+max <- annual_median[which.max(annual_median)]
+min <- annual_median[which.min(annual_median)]
+
+print(paste0("The maximum median annual temperature of ", max, " occurred in ", names(max), " and the minimum median annual temperature of ", min, " occurred in ", names(min), "."))
 
 ```
 
