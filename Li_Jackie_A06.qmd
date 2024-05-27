@@ -122,6 +122,7 @@ Print the `player_info` list to prove you were successful.
 
 height_info <- list(78, 81, 78, 86, 85)
 
+# adding the corresponding heights to each player's list under the new cateogry, "height"
 for(i in 1:length(player_info)){
   player_info[[i]] <- append(player_info[[i]], list(height = height_info[[i]]))
 }
@@ -148,12 +149,22 @@ Note: this must still run correctly even if the values were to change or if anot
 
 ```{r}
 
+# initializing empty lists for player names and points per game
 points_per_game <- list()
 names_list <- list()
 
 for(i in 1:length(player_info)){
-  points_per_game <- append(points_per_game, player_info[[i]]$points/player_info[[i]]$games_played)
+
+  # calculating points per game
+  point_val <- player_info[[i]]$points/player_info[[i]]$games_played
+
+  # adding the values to the points per game list
+  points_per_game <- append(points_per_game, point_val)
+
+  # adding player names to the names list
   names_list <- append(names_list, names(player_info[i]))
+
+  # assigning the names list to the points per game list
   names(points_per_game) <- names_list
 }
 
@@ -172,7 +183,8 @@ Store the output as a vector and print the results.
 
 ```{r}
 
-rounded_points <- sapply(points_per_game, round) 
+# using sapply to apply the round function and return a vector
+rounded_points <- sapply(points_per_game, round, 2) 
 rounded_points
 
 ```
@@ -198,11 +210,17 @@ Hint: use `MARGIN = 1:2` to apply the function to each value instead of only a r
 
 ```{r}
 
+# creating the specific function
 rounding <- function(value){
+  
+  # counting how many digits in each number
   digits <- nchar(as.character(value))-1
+
+  # returning the value rounded to how many digits it has 
   return(round(value, -digits))
 }
 
+# using the apply function to apply "rounding" on all elements in the matrix
 mat_rand_round <- apply(mat_rand, 1:2, rounding)
 mat_rand_round
 
@@ -229,9 +247,11 @@ max_temps <- read_tsv("state_max_temps.tsv") |>
 Calculate the average temperature for each month across the whole data frame (using the data for all three states together).
 
 ```{r}
-raw_temp <- max_temps[-c(1,2)]
-raw_temp
 
+# make a new matrix without the first two information columns
+raw_temp <- max_temps[-c(1,2)]
+
+# apply mean function to the new matrix with only the raw value
 average_temp <- apply(raw_temp,2,mean)
 average_temp
 
@@ -250,10 +270,14 @@ Create three new data frames by slicing the data by state.
 No need to print any output here.
 
 ```{r}
+
+# slicing data to only include the CO rows
 co_temp <- as.data.frame(max_temps[max_temps[,1] == "CO",])
 
+# slicing data to only include the OH rows
 oh_temp <- as.data.frame(max_temps[max_temps[,1] == "OH",])
 
+# slicing data to only include VA rows
 va_temp <- as.data.frame(max_temps[max_temps[,1] == "VA",])
 
 ```
@@ -283,6 +307,7 @@ raw_co_temp <- co_temp[-c(1,2)]
 annual_median <- apply(raw_co_temp, 1, median)
 names(annual_median) <- co_temp[,2]
 
+# the minimum and maximum annual median
 max <- annual_median[which.max(annual_median)]
 min <- annual_median[which.min(annual_median)]
 
@@ -302,10 +327,19 @@ Run your function with 935068.
 ```{r}
 digits_sum <- function(number){
   if(number == 0){ # base case
+
+      # if the number has been truncated to the point where it equals 0, stop the function
+
       return(0)
   } else { # recursive case
+      
+      # retrieving the last digit
       last_digit = number %% 10
+
+      # truncating the original value by deleting its last digit
       next_number = number %/% 10
+
+      # finding the sum of the last digit and the function appplied on the truncated value
       return(last_digit + digits_sum(next_number))
   }
 }
